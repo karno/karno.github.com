@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
-
   <title><![CDATA[The Grimoire of Karno]]></title>
   <link href="http://karno.github.io/atom.xml" rel="self"/>
   <link href="http://karno.github.io/"/>
-  <updated>2013-05-14T23:37:28+09:00</updated>
+  <updated>2013-05-29T20:07:13+09:00</updated>
   <id>http://karno.github.io/</id>
   <author>
     <name><![CDATA[Karno]]></name>
