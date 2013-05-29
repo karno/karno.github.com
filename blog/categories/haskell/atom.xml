@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
-  <title><![CDATA[The Grimoire of Karno]]></title>
-  <link href="http://karno.github.io/atom.xml" rel="self"/>
+
+  <title><![CDATA[Category: haskell | The Grimoire of Karno]]></title>
+  <link href="http://karno.github.io/blog/categories/haskell/atom.xml" rel="self"/>
   <link href="http://karno.github.io/"/>
   <updated>2013-05-29T21:51:43+09:00</updated>
   <id>http://karno.github.io/</id>
@@ -125,15 +126,6 @@ Prelude&gt; plus2 5
 <p>Markdownの練習を兼ねてゆるふわとやっていきます．</p>
 
 <p>ご意見ご感想などは<a href="http://twitter.com/karno">twitter:@karno</a>まで．(記事のURLを付けていただけると助かります)</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Hello, World!]]></title>
-    <link href="http://karno.github.io/blog/2013/05/14/hello/"/>
-    <updated>2013-05-14T23:34:00+09:00</updated>
-    <id>http://karno.github.io/blog/2013/05/14/hello</id>
-    <content type="html"><![CDATA[<p>から揚げ食べたい</p>
 ]]></content>
   </entry>
   
