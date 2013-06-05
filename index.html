@@ -9,8 +9,9 @@
   <meta name="author" content="Karno">
 
   
-  <meta name="description" content="やんごとなき事情によって大学に宿泊を強制される毎週水曜日の時間をつぶすため，Haskellの勉強を始めました．
-Haskellの勉強過程をまとめて叩いてもらうためにブログ始めたので，毎週水曜日にちまちま更新するつもりです． 参考書には，プログラミング Haskellを選択しています． &hellip;">
+  <meta name="description" content="さて今週も水曜日がやってまいりました．水曜深夜，Haskellのお時間です． 関係ないですが，最近 Scala を使い始めました．
+Javaで殴りたかった部分がいろいろと改善されてて歓喜しています．
+高階関数とか，Optionとか，Futureとか．いいですね． さて本題へ．今日は関数とラムダ式， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -45,6 +46,233 @@ Haskellの勉強過程をまとめて叩いてもらうためにブログ始め�
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/06/05/wednesdayhaskell-vol-dot-2/">Wednesday&#8217;Haskell Vol.2</a></h1>
+    
+  </header>
+
+
+  
+    <p class="meta">
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-06-05T23:01:00+09:00" pubdate data-updated="true">Jun 5<span>th</span>, 2013</time>
+      
+    </p>
+  
+  
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/haskell/'>Haskell</a>
+  
+</span>
+
+
+  <div class="entry-content"><p>さて今週も水曜日がやってまいりました．水曜深夜，Haskellのお時間です．</p>
+
+<p>関係ないですが，最近 Scala を使い始めました．
+Javaで殴りたかった部分がいろいろと改善されてて歓喜しています．
+高階関数とか，Optionとか，Futureとか．いいですね．</p>
+
+<p>さて本題へ．今日は関数とラムダ式，パターンマッチなどです．</p>
+
+<h1>4章: 関数定義</h1>
+
+<h2>関数を定義する</h2>
+
+<p>関数は，型の制約と処理の内容を二つ重ねて書くのが一般的みたいです[要出典]．たとえば，</p>
+
+<pre><code>is_even :: Integral a =&gt; a -&gt; Bool
+is_even n = n `mod` 2 == 0
+</code></pre>
+
+<p>のように．</p>
+
+<p>ただ，Haskellは型推論が強力なので，たとえば</p>
+
+<pre><code>is_even_s n = n `mod` 2 == 0
+</code></pre>
+
+<p>といきなり書いてしまっても</p>
+
+<pre><code>*Main&gt; :t is_even_s
+is_even_s :: Integral a =&gt; a -&gt; Bool 
+</code></pre>
+
+<p>と全て察した答えが返ってきます．えらいね．</p>
+
+<h2>条件式とガード</h2>
+
+<p>たとえば，t >= 0のときに1を返す関数</p>
+
+<pre><code>int unit_step(int t) {
+    // 普通は return t &gt;= 0 ? 1 : 0; とか書くのかもしれない
+    if (t &gt;= 0)
+        return 1;
+    else
+        return 0;
+}
+</code></pre>
+
+<p>をHaskellではどう書くか．</p>
+
+<p>まず，Haskellにもifがあるので，それを使ってみましょう．</p>
+
+<p>というわけで，Haskell版 unit_step．</p>
+
+<pre><code>unit_step :: Int -&gt; Int
+unit_step t = if t &gt;= 0 then 1 else 0
+</code></pre>
+
+<p>はい，見た通りですね．</p>
+
+<p>Haskellでは，if-then-else の else が必須となります．省略不可です．
+そりゃあまぁ，elseが何も返さない時にifが返す値が無くなるので当たり前っちゃ当たり前の話ですか．</p>
+
+<pre><code>*Main&gt; unit_step (-1)
+0
+*Main&gt; unit_step 4
+1
+</code></pre>
+
+<p>はい，ありがとうございます．</p>
+
+<p>じゃあ，今度は t &lt; 0 ,t > 10 のときに1を返す関数について．
+先ほどのように素直に</p>
+
+<pre><code>zttz :: Int -&gt; Int
+zttz t = if t &lt; 0 then 1 else if t &gt; 10 then 1 else 0 
+</code></pre>
+
+<p>と書いてもいいのですが，可読性がいまいちです．そんな時は，ガード付きの等式というものがあります．</p>
+
+<pre><code>zttz  n | n &lt; 0 = 1
+        | n &gt; 10 = 1
+        | otherwise = 0
+</code></pre>
+
+<p>みたいなね．ちなみに，| の位置はそろえる必要があるみたいです．
+vimでgg=G すると全部行頭に来ちゃって困るね．仕方ないね．</p>
+
+<h2>パターンマッチ</h2>
+
+<p>さっきから</p>
+
+<pre><code>unit_step :: Int -&gt; Int
+unit_step t = if t &gt;= 0 then 1 else 0
+</code></pre>
+
+<p>みたいな書き方をしていますが，もしも</p>
+
+<pre><code>pulse :: Int -&gt; Int
+pulse t = if t == 0 then 1 else 0
+</code></pre>
+
+<p>のような場合，もうちょっと直観的に書ける方法があります．そう，パターンマッチです．</p>
+
+<pre><code>pulse :: Int -&gt; Int
+pulse 0 = 1
+pulse _ = 0
+</code></pre>
+
+<p>こんな感じ．_は何でも受け取ります．</p>
+
+<p>さて，このパターンマッチ，何が嬉しいのかというと．</p>
+
+<h2>いろいろなパターンマッチ</h2>
+
+<p>たとえば タプル．coupleから2つめの値を取り出そうとするとき</p>
+
+<pre><code>snd :: (a, b) -&gt; b
+snd (_, y) = y
+</code></pre>
+
+<p>のように，タプルに対してマッチングさせることができます．</p>
+
+<p>たとえば リスト．リストの2番目の要素を取得してくるような，そんな
+見本誌を避けて取るような動作をさせたいときには</p>
+
+<pre><code>pick_usuihon :: [b] -&gt; b
+pick_usuihon [_, b, _, _ ] = b
+</code></pre>
+
+<p>のようになります．ただしこれには問題があって，リストが4つの場合しか受け取れません．
+こんな時には，<strong> cons演算子 </strong>: を使います．</p>
+
+<p>リストは[1, 2, 3, 4] のように見えていますが，実は(1 :(2 :(3 :([])))) みたいな感じの表現に
+なっています．なので，</p>
+
+<pre><code>pick_usuihon (_:b:_) = b
+</code></pre>
+
+<p>と書けば，後ろの _ に残りのすべての部分がキャプチャされるので，</p>
+
+<pre><code>*Main&gt; pick_usuihon [1,2,3,4,5]
+2
+</code></pre>
+
+<p>と，見事2冊目をゲットできるわけです．</p>
+
+<h2>ラムダ式</h2>
+
+<p>Haskellはもちろん[要出典]，ラムダ式を定義することができます．</p>
+
+<pre><code>\x -&gt; x + x
+</code></pre>
+
+<p>以上です．味気なし．よく使うし，あえて紹介するまでもないかもしれないけど</p>
+
+<pre><code>*Main&gt; let power = \x n -&gt; x ^ n
+*Main&gt; power 2 5
+32
+</code></pre>
+
+<p>みたいな感じに遊べます．</p>
+
+<h2>セクション</h2>
+
+<p>1 + 2 の + みたいな演算子は，(+) みたいにすることでカリー化された関数になるらしいです．</p>
+
+<pre><code>*Main&gt; (+) 5 10
+15
+</code></pre>
+
+<p>おお，すごいすごい，</p>
+
+<p>で，このカリー化された関数 (+) とか，それを部分適用してあるやつ (x +) (+ y) っていうのを
+セクションって呼ぶらしいです．</p>
+
+<p>ちょっとこのあたりあんまり重要度が分かってないので，まぁ，おいおい分かるのでしょう．</p>
+
+<h1>まとめ</h1>
+
+<p>関数型言語の関数についてさらーっとやりました．「関数」について分かったので，残すは「型言語」だけですね．</p>
+
+<p>参考書のページ数にして9ページ分くらいがこんな容量に膨らむとは思っていませんでした．日付超えるのも仕方ないね．</p>
+
+<h1>つけめんたべたい</h1>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -256,6 +484,10 @@ Prelude&gt; plus2 5
     <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/06/05/wednesdayhaskell-vol-dot-2/">Wednesday&#8217;Haskell Vol.2</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2013/05/29/leng-yasihaskellhazimemasita./">冷やしHaskellはじめました。</a>
